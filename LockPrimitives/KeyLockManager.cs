@@ -12,11 +12,23 @@ namespace LockPrimitives
 
         private int RefCounter;
 
+        private bool LockObject;
+
         public KeyLockItem(string key, KeyLockManager keyLockManager)
         {
             Key = key;
             KeyLockManager = keyLockManager;
             RefCounter = 1;
+        }
+
+        public void Lock()
+        {
+            Monitor.Enter(LockObject);
+        }
+
+        public void Unlock()
+        {
+            Monitor.Exit(LockObject);
         }
 
         // Trying to keep RefCounter to be positive value
