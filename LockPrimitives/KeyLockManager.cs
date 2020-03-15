@@ -8,10 +8,13 @@ namespace LockPrimitives
 {
     public class KeyLockItem
     {
+        public readonly string Key;
+        
         private int RefCounter;
 
-        public KeyLockItem()
+        public KeyLockItem(string key)
         {
+            Key = key;
             RefCounter = 1;
         }
 
@@ -64,7 +67,7 @@ namespace LockPrimitives
         {
             while (true)
             {
-                var newItem = new KeyLockItem();
+                var newItem = new KeyLockItem(key);
                 var item = _keyToLockItems.GetOrAdd(key, newItem);
 
                 // Item was just added. The items are created with refCount = 1, so we don't need to pin it
@@ -91,7 +94,10 @@ namespace LockPrimitives
 
         public void ReturnLockItem(KeyLockItem item)
         {
-
+            if (item.Unpin())
+            {
+                _keyToLockItems.TryRemove(item.Key, out var item2);
+            }
         }
     }
 }
