@@ -6,7 +6,7 @@ namespace Demo
 {
     class Program
     {
-        private static KeyLockManager<string> KeyLockManager = new KeyLockManager<string>();
+        private static KeyLockManager<int> KeyLockManager = new KeyLockManager<int>();
 
         // The value protected by keylock manager
         public static int value = 0;
@@ -36,7 +36,7 @@ namespace Demo
                 
                 var numberToAdd = rnd.Next(0, 1000);
 
-                using (var item = KeyLockManager.GetLockItem("hello"))
+                using (var item = KeyLockManager.GetLockItem(88))
                 {
                     item.Lock();
 
