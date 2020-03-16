@@ -6,7 +6,7 @@ namespace Demo
 {
     class Program
     {
-        private static KeyLockManager KeyLockManager = new KeyLockManager();
+        private static KeyLockManager<string> KeyLockManager = new KeyLockManager<string>();
 
         // The value protected by keylock manager
         public static int value = 0;
@@ -33,14 +33,11 @@ namespace Demo
                 Thread.Sleep(rnd.Next(100, 3000));
 
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value is {value}");
-
-
+                
                 var numberToAdd = rnd.Next(0, 1000);
 
                 using (var item = KeyLockManager.GetLockItem("hello"))
                 {
-                    
-
                     item.Lock();
 
                     Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {value}");
@@ -49,9 +46,7 @@ namespace Demo
 
                     Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {value}");
 
-
                     value -= numberToAdd;
-
                     
                     item.Unlock();
                 }

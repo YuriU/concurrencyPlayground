@@ -4,21 +4,21 @@ using System.Threading;
 
 namespace LockPrimitives
 {
-    public class KeyLockItem : IDisposable
+    public class KeyLockItem<T> : IDisposable
     {
-        public readonly string Key;
+        public readonly T Key;
 
-        public readonly KeyLockManager KeyLockManager;
+        public readonly KeyLockManager<T> KeyLockManager;
 
-        private int RefCounter;
+        private int _refCounter;
 
         private object LockObject = new object();
 
-        public KeyLockItem(string key, KeyLockManager keyLockManager)
+        public KeyLockItem(T key, KeyLockManager<T> keyLockManager)
         {
             Key = key;
             KeyLockManager = keyLockManager;
-            RefCounter = 1;
+            _refCounter = 1;
         }
 
         public void Lock()
@@ -38,7 +38,7 @@ namespace LockPrimitives
             // Spinning while one of the following cases happen
             while (true)
             {
-                int refCounter = RefCounter;
+                int refCounter = _refCounter;
 
                 // 1. The item is released by it's previous owner, so it can be deleted from the repository
                 if (refCounter == 0)
@@ -47,7 +47,7 @@ namespace LockPrimitives
                 }
 
                 // 2. We added our reference to the counter, so while we release it, noone can delete it
-                if (Interlocked.CompareExchange(ref RefCounter, refCounter + 1, refCounter) == refCounter)
+                if (Interlocked.CompareExchange(ref _refCounter, refCounter + 1, refCounter) == refCounter)
                 {
                     return true;
                 }
@@ -56,7 +56,7 @@ namespace LockPrimitives
 
         public bool Unpin()
         {
-            var value = Interlocked.Decrement(ref RefCounter);
+            var value = Interlocked.Decrement(ref _refCounter);
             if (value == 0)
             {
                 return true;
@@ -73,19 +73,15 @@ namespace LockPrimitives
         }
     }
 
-    public class KeyLockManager
+    public class KeyLockManager<T>
     {
-        private ConcurrentDictionary<string, KeyLockItem> _keyToLockItems = new ConcurrentDictionary<string, KeyLockItem>();
+        private ConcurrentDictionary<T, KeyLockItem<T>> _keyToLockItems = new ConcurrentDictionary<T, KeyLockItem<T>>();
 
-        public KeyLockManager()
-        {
-        }
-
-        public KeyLockItem GetLockItem(string key)
+        public KeyLockItem<T> GetLockItem(T key)
         {
             while (true)
             {
-                var newItem = new KeyLockItem(key, this);
+                var newItem = new KeyLockItem<T>(key, this);
 
                 var item = _keyToLockItems.GetOrAdd(key, newItem);
 
@@ -111,7 +107,7 @@ namespace LockPrimitives
             }
         }
 
-        public void ReturnLockItem(KeyLockItem item)
+        public void ReturnLockItem(KeyLockItem<T> item)
         {
             if (item.KeyLockManager != this)
             {
