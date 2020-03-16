@@ -12,7 +12,7 @@ namespace LockPrimitives
 
         private int RefCounter;
 
-        private bool LockObject;
+        private object LockObject = new object();
 
         public KeyLockItem(string key, KeyLockManager keyLockManager)
         {

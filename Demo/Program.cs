@@ -18,14 +18,10 @@ namespace Demo
             for (int i = 0; i < 10; i++)
             {
                 threads[0] = new Thread(ThreadProc);
+                threads[0].Start();
             }
 
-            using (var item = keyLockManager.GetLockItem("hello"))
-            {
-                item.Lock();
-                Console.WriteLine("Item");
-                item.Unlock();
-            }
+            Console.Read();
         }
 
         private static void ThreadProc(object obj)
@@ -39,7 +35,7 @@ namespace Demo
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value is {value}");
 
 
-                var numberToAdd = rnd.Next();
+                var numberToAdd = rnd.Next(0, 1000);
 
                 using (var item = KeyLockManager.GetLockItem("hello"))
                 {
@@ -47,14 +43,14 @@ namespace Demo
 
                     item.Lock();
 
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {value}");
 
                     value += numberToAdd;
 
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {value}");
 
 
-                    value += numberToAdd;
+                    value -= numberToAdd;
 
                     
                     item.Unlock();
