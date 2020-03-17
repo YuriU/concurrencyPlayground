@@ -47,8 +47,6 @@ namespace Demo
                     Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {value}");
 
                     value -= numberToAdd;
-                    
-                    item.Unlock();
                 }
             }
         }

@@ -14,6 +14,8 @@ namespace LockPrimitives
 
         private object LockObject = new object();
 
+        private bool _locked = false;
+
         public KeyLockItem(T key, KeyLockManager<T> keyLockManager)
         {
             Key = key;
@@ -24,10 +26,12 @@ namespace LockPrimitives
         public void Lock()
         {
             Monitor.Enter(LockObject);
+            _locked = true;
         }
 
         public void Unlock()
         {
+            _locked = false;
             Monitor.Exit(LockObject);
         }
 
@@ -69,6 +73,9 @@ namespace LockPrimitives
 
         public void Dispose()
         {
+            if(_locked)
+                Unlock();
+
             KeyLockManager.ReturnLockItem(this);
         }
     }
