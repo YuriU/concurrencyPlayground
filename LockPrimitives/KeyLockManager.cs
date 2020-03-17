@@ -83,7 +83,7 @@ namespace LockPrimitives
     public class KeyLockManager<T>
     {
         private ConcurrentDictionary<T, KeyLockItem<T>> _keyToLockItems = new ConcurrentDictionary<T, KeyLockItem<T>>();
-
+        
         public KeyLockItem<T> GetLockItem(T key)
         {
             while (true)

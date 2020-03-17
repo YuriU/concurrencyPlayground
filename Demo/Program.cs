@@ -36,10 +36,8 @@ namespace Demo
                 
                 var numberToAdd = rnd.Next(0, 1000);
 
-                using (var item = KeyLockManager.GetLockItem(88))
+                using (var item = KeyLockManager.GetLocked(88))
                 {
-                    item.Lock();
-
                     Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {value}");
 
                     value += numberToAdd;
