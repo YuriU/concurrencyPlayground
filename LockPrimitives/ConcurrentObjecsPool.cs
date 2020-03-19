@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 
 namespace LockPrimitives
 {
-    public abstract class PinableObjecsPool<TKey, TObject>
-        where TObject : PinableObject<TKey, TObject>
+    public abstract class ConcurrentObjecsPool<TKey, TObject>
+        where TObject : ConcurrentObjectPoolItem<TKey, TObject>
     {
         private ConcurrentDictionary<TKey, TObject> _keyToLockItems = new ConcurrentDictionary<TKey, TObject>();
 
@@ -39,7 +39,7 @@ namespace LockPrimitives
             }
         }
         
-        public void ReturnLockItem(PinableObject<TKey, TObject> item)
+        public void ReturnLockItem(ConcurrentObjectPoolItem<TKey, TObject> item)
         {
             if (item.Pool != this)
             {

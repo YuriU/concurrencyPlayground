@@ -3,19 +3,19 @@ using System;
 namespace LockPrimitives
 {
     public class KeyLockAsyncItem<T>
-        : PinableObject<T, KeyLockAsyncItem<T>>, IDisposable
+        : ConcurrentObjectPoolItem<T, KeyLockAsyncItem<T>>, IDisposable
     {
         public void Dispose()
         {
         }
 
-        public KeyLockAsyncItem(T key, PinableObjecsPool<T, KeyLockAsyncItem<T>> pool) 
+        public KeyLockAsyncItem(T key, ConcurrentObjecsPool<T, KeyLockAsyncItem<T>> pool) 
             : base(key, pool)
         {
         }
     }
     
-    public class KeyLockManagerAsync<T> : PinableObjecsPool<T, KeyLockAsyncItem<T>>
+    public class KeyLockManagerAsync<T> : ConcurrentObjecsPool<T, KeyLockAsyncItem<T>>
     {
         protected override KeyLockAsyncItem<T> NewObject(T key)
         {

@@ -5,7 +5,7 @@ using System.Threading;
 namespace LockPrimitives
 {
     public class KeyLockItem<T> 
-        : PinableObject<T, KeyLockItem<T>>, IDisposable
+        : ConcurrentObjectPoolItem<T, KeyLockItem<T>>, IDisposable
     {
         private object LockObject = new object();
 
@@ -36,7 +36,7 @@ namespace LockPrimitives
         }
     }
 
-    public class KeyLockManager<T> : PinableObjecsPool<T, KeyLockItem<T>>
+    public class KeyLockManager<T> : ConcurrentObjecsPool<T, KeyLockItem<T>>
     {
         protected override KeyLockItem<T> NewObject(T key)
         {

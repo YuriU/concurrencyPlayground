@@ -3,16 +3,16 @@ using System.Threading;
 
 namespace LockPrimitives
 {
-    public class PinableObject<TKey, TObject>
-        where TObject : PinableObject<TKey, TObject>
+    public class ConcurrentObjectPoolItem<TKey, TObject>
+        where TObject : ConcurrentObjectPoolItem<TKey, TObject>
     {
         public readonly TKey Key;
         
-        public readonly PinableObjecsPool<TKey, TObject> Pool;
+        public readonly ConcurrentObjecsPool<TKey, TObject> Pool;
 
         private int _refCounter;
         
-        public PinableObject(TKey key, PinableObjecsPool<TKey, TObject> pool)
+        public ConcurrentObjectPoolItem(TKey key, ConcurrentObjecsPool<TKey, TObject> pool)
         {
             Key = key;
             Pool = pool;
