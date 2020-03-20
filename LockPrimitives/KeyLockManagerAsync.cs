@@ -7,7 +7,7 @@ namespace LockPrimitives
     public class KeyLockAsyncItem<T>
         : ConcurrentObjectPoolItem<T, KeyLockAsyncItem<T>>, IDisposable
     {
-        SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         
         private bool _locked = false;
 
