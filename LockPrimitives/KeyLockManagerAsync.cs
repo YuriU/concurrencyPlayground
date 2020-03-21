@@ -43,5 +43,15 @@ namespace LockPrimitives
         {
             return new KeyLockAsyncItem<T>(key, this);
         }
+
+        public async Task ProcessInLock(T key, Action action)
+        {
+            using (var item = GetLockItem(key))
+            {
+                await item.WaitAsync();
+                action();
+                item.Release();
+            }
+        }
     }
 }
