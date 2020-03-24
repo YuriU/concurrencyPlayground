@@ -8,8 +8,8 @@ namespace Demo
 {
     public class AsyncLockDemo
     {
-        // The value protected by keylock manager
-        public static int value = 0;
+        // Shared states
+        public static int[] states = new[] { 0, 0, 0 };
         
         private static KeyLockManagerAsync<int> KeyLockManager = new KeyLockManagerAsync<int>();
         
@@ -23,27 +23,28 @@ namespace Demo
 
         private static async Task TaskProc1()
         {
+            var index = Thread.CurrentThread.ManagedThreadId % states.Length;
             while (true)
             {
                 Random rnd = new Random(Thread.CurrentThread.ManagedThreadId);
 
                 await Task.Delay(rnd.Next(100, 3000));
                 
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value is {value}");
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value is {states[index]}");
                 
                 var numberToAdd = rnd.Next(0, 1000);
 
-                using (var item = KeyLockManager.GetLockItem(32))
+                using (var item = KeyLockManager.GetLockItem(index))
                 {
                     await item.WaitAsync();
                     
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {states[index]}");
 
-                    value += numberToAdd;
+                    states[index] += numberToAdd;
 
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {states[index]}");
 
-                    value -= numberToAdd;
+                    states[index] -= numberToAdd;
                     
                     item.Release();
                 }
@@ -52,25 +53,26 @@ namespace Demo
         
         private static async Task TaskProc2()
         {
+            var index = Thread.CurrentThread.ManagedThreadId % states.Length;
             while (true)
             {
                 Random rnd = new Random(Thread.CurrentThread.ManagedThreadId);
 
                 await Task.Delay(rnd.Next(100, 3000));
 
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value is {value}");
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}: Just before take a lock. Value {index} is {states[index]}");
                 
                 var numberToAdd = rnd.Next(0, 1000);
 
                 await KeyLockManager.ProcessInLock(32, () =>
                 {
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. BC Value {index} is {states[index]}");
 
-                    value += numberToAdd;
+                    states[index] += numberToAdd;
 
-                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value is {value}");
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}:Under the lock. Changed Value {index} is {states[index]}");
 
-                    value -= numberToAdd;
+                    states[index] -= numberToAdd;
                 });
             }
         }
