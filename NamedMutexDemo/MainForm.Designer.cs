@@ -28,8 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this._btnPass = new System.Windows.Forms.Button();
             this._statusAnimationControl = new NamedMutexDemo.StatusAnimationControl();
             this.SuspendLayout();
+            // 
+            // _btnPass
+            // 
+            this._btnPass.Location = new System.Drawing.Point(12, 218);
+            this._btnPass.Name = "_btnPass";
+            this._btnPass.Size = new System.Drawing.Size(75, 23);
+            this._btnPass.TabIndex = 1;
+            this._btnPass.Text = "Pass >>>";
+            this._btnPass.UseVisualStyleBackColor = true;
+            this._btnPass.Click += new System.EventHandler(this._btnPass_Click);
             // 
             // _statusAnimationControl
             // 
@@ -42,10 +53,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(343, 382);
+            this.ClientSize = new System.Drawing.Size(343, 246);
+            this.Controls.Add(this._btnPass);
             this.Controls.Add(this._statusAnimationControl);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(359, 285);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(359, 285);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Named Mutex Demo";
             this.ResumeLayout(false);
 
         }
@@ -53,6 +69,7 @@
         #endregion
 
         private StatusAnimationControl _statusAnimationControl;
+        private System.Windows.Forms.Button _btnPass;
     }
 }
 
