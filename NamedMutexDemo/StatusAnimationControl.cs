@@ -7,18 +7,27 @@ namespace NamedMutexDemo
 {
     public partial class StatusAnimationControl : UserControl
     {
-        public Image[] AngleImages = new Image[360];
+        private readonly Image[] _angleImages = new Image[360];
+
+        private Func<long> _valueResolver;
+
         public StatusAnimationControl()
         {
             InitializeComponent();
             InitializeImages();
         }
 
+        public void SetValueResolver(Func<long> func)
+        {
+            _valueResolver = func;
+        }
+
         private void InitializeImages()
         {
             for (int i = 0; i < 360; i++)
             {
-                AngleImages[i] = MakeImage(i);
+
+                _angleImages[i] = MakeImage(i);
             }
         }
 
@@ -43,13 +52,17 @@ namespace NamedMutexDemo
             return bitmap;
         }
 
-        private int _iteration = 0;
-
         private void _animationTimer_Tick(object sender, EventArgs e)
         {
-            var graphics = this.CreateGraphics();
-            graphics.DrawImage(AngleImages[_iteration % 360], new Point(0, 0));
-            _iteration+=5;
+            var valueResolver = _valueResolver;
+
+            if (valueResolver != null)
+            {
+                var graphics = this.CreateGraphics();
+                var value = _valueResolver();
+                graphics.DrawImage(_angleImages[value % 360], new Point(0, 0));
+                _lblIterationValue.Text = value.ToString();
+            }
         }
     }
 }

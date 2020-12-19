@@ -28,22 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.statusAnimationControl1 = new NamedMutexDemo.StatusAnimationControl();
+            this._statusAnimationControl = new NamedMutexDemo.StatusAnimationControl();
             this.SuspendLayout();
             // 
-            // statusAnimationControl1
+            // _statusAnimationControl
             // 
-            this.statusAnimationControl1.Location = new System.Drawing.Point(12, 12);
-            this.statusAnimationControl1.Name = "statusAnimationControl1";
-            this.statusAnimationControl1.Size = new System.Drawing.Size(200, 200);
-            this.statusAnimationControl1.TabIndex = 0;
+            this._statusAnimationControl.Location = new System.Drawing.Point(12, 12);
+            this._statusAnimationControl.Name = "_statusAnimationControl";
+            this._statusAnimationControl.Size = new System.Drawing.Size(320, 200);
+            this._statusAnimationControl.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(397, 382);
-            this.Controls.Add(this.statusAnimationControl1);
+            this.ClientSize = new System.Drawing.Size(343, 382);
+            this.Controls.Add(this._statusAnimationControl);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -52,7 +52,7 @@
 
         #endregion
 
-        private StatusAnimationControl statusAnimationControl1;
+        private StatusAnimationControl _statusAnimationControl;
     }
 }
 

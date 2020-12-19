@@ -19,13 +19,17 @@ namespace NamedMutexDemo
         public MainForm()
         {
             InitializeComponent();
+            _statusAnimationControl.SetValueResolver(() =>
+            {
+                return Interlocked.Read(ref _iteration);
+            });
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             WorkerThread.IsBackground = true;
-            //WorkerThread.Start(this);
+            WorkerThread.Start(this);
         }
 
         private static void WorkerThreadWrapper(object param)
@@ -39,18 +43,8 @@ namespace NamedMutexDemo
             while (true)
             {
                 Interlocked.Increment(ref _iteration);
-
-                var handleIndex = WaitHandle.WaitAny(new WaitHandle[] { _disposedEvent }, 10);
-
-                // Disposed
-                if (handleIndex == 0)
-                {
-                    return;
-                }
+                Thread.Sleep(100);
             }
         }
-
-
-
     }
 }
