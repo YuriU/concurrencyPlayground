@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PriorityQueuesChannel
 {
+    
     public abstract class PrioritiesQueueChannelBase<T> : IQueueChannel<T>
         where T : class
     {
@@ -24,7 +26,7 @@ namespace PriorityQueuesChannel
         {
             foreach (var queue in _queuesByPriority)
             {
-                Task.Factory.StartNew(() => PollQueueTask(queue, ct));
+                Task.Factory.StartNew(() => PollQueueTask(queue, ct), TaskCreationOptions.LongRunning);
             }
         }
 
