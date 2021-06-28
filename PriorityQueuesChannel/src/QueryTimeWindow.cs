@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PriorityQueuesChannel
 {
-    public class QueryNewTaskWindow<TResult>
+    public class QueryTimeWindow<TResult>
         where TResult : class
     {
         // If window is open it is expected to store message inside
@@ -13,7 +14,7 @@ namespace PriorityQueuesChannel
 
         public bool IsOpened => _isOpened;
 
-        private readonly Dictionary<string, TaskCompletionSource<TResult>> _awaitingTasks;
+        private readonly ConcurrentDictionary<string, TaskCompletionSource<TResult>> _awaitingTasks;
 
         private readonly string[] _priorityOrder;
         
@@ -26,11 +27,11 @@ namespace PriorityQueuesChannel
 
         public Task NextEventTask => _nextWindowEvent.Task;
 
-        public QueryNewTaskWindow(string[] queuesByPriority, Func<string, TResult, Task> returnAction)
+        public QueryTimeWindow(string[] queuesByPriority, Func<string, TResult, Task> returnAction)
         {
             _priorityOrder = queuesByPriority;
             _returnAction = returnAction;
-            _awaitingTasks = new Dictionary<string, TaskCompletionSource<TResult>>();
+            _awaitingTasks = new ConcurrentDictionary<string, TaskCompletionSource<TResult>>();
             foreach (var queue in queuesByPriority)
             {
                 var taskCompletionSource = new TaskCompletionSource<TResult>();

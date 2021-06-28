@@ -9,14 +9,14 @@ namespace PriorityQueuesChannel
     public abstract class PrioritiesQueueChannelBase<T> : IQueueChannel<T>
         where T : class
     {
-        private readonly QueryNewTaskWindow<T> _queryWindow;
+        private readonly QueryTimeWindow<T> _queryWindow;
 
         private readonly string[] _queuesByPriority;
 
         protected PrioritiesQueueChannelBase(string[] queuesByPriority)
         {
             _queuesByPriority = queuesByPriority;
-            _queryWindow = new QueryNewTaskWindow<T>(
+            _queryWindow = new QueryTimeWindow<T>(
                 _queuesByPriority,
                 PutItemBack
             );
@@ -45,12 +45,7 @@ namespace PriorityQueuesChannel
         {
             while (!ct.IsCancellationRequested)
             {
-                // If waiting for the result
-                if (!whenReady.Task.IsCompleted)
-                {
-                    whenReady.SetResult(true);    
-                }
-                
+                whenReady.CompleteIfNeed(true);
                 await _queryWindow.NextEventTask;
                 
                 while (!ct.IsCancellationRequested)
