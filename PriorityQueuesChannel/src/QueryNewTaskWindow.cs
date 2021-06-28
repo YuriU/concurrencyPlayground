@@ -18,7 +18,7 @@ namespace PriorityQueuesChannel
         private readonly string[] _priorityOrder;
         
         // Action for return rest of the actions
-        private readonly Func<TResult, string, Task> _returnAction;
+        private readonly Func<string, TResult, Task> _returnAction;
 
         private TaskCompletionSource<bool> _nextWindowEvent = new TaskCompletionSource<bool>();
 
@@ -26,27 +26,27 @@ namespace PriorityQueuesChannel
 
         public Task NextEventTask => _nextWindowEvent.Task;
 
-        public QueryNewTaskWindow(string[] actions, Func<TResult, string, Task> returnAction)
+        public QueryNewTaskWindow(string[] queuesByPriority, Func<string, TResult, Task> returnAction)
         {
-            _priorityOrder = actions;
+            _priorityOrder = queuesByPriority;
             _returnAction = returnAction;
             _awaitingTasks = new Dictionary<string, TaskCompletionSource<TResult>>();
-            foreach (var action in actions)
+            foreach (var queue in queuesByPriority)
             {
                 var taskCompletionSource = new TaskCompletionSource<TResult>();
-                _awaitingTasks[action] = taskCompletionSource;
+                _awaitingTasks[queue] = taskCompletionSource;
             }
         }
         
-        public async Task<bool> TrySaveResult(string action, TResult result)
+        public async Task<bool> TrySaveResult(string queue, TResult result)
         {
             if (!_isOpened)
             {
-                await _returnAction(result, action);
+                await _returnAction(queue, result);
                 return false;
             }
             
-            _awaitingTasks[action].SetResult(result);
+            _awaitingTasks[queue].SetResult(result);
             return true;
         }
 
@@ -65,7 +65,7 @@ namespace PriorityQueuesChannel
             _thisWindowEvent.SetResult(true);
             
             List<Task> tasks = _priorityOrder
-                .Select(queue => _awaitingTasks[queue].Task)
+                .Select(q => _awaitingTasks[q].Task)
                 .Cast<Task>().ToList();
 
             // Initial delay needed to let new tasks to reach Queue over network
@@ -100,7 +100,7 @@ namespace PriorityQueuesChannel
                     if (queue != queueItemToBeReturned)
                     {
                         if(!_awaitingTasks[queue].Task.IsCanceled)
-                            await _returnAction(_awaitingTasks[queue].Task.Result, queue);                        
+                            await _returnAction(queue, _awaitingTasks[queue].Task.Result);                        
                     }
                     
                     _awaitingTasks[queue] = new TaskCompletionSource<TResult>();

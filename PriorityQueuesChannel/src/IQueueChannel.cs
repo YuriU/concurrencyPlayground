@@ -11,6 +11,6 @@ namespace PriorityQueuesChannel
 
         Task<T> GetNextItem(TimeSpan windowToStayOpenTime);
 
-        Task AckItem(T item);
+        Task AckItem(string queue, T item);
     }
 }

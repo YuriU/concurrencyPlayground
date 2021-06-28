@@ -18,7 +18,7 @@ namespace PriorityQueuesChannel
             _queuesByPriority = queuesByPriority;
             _queryWindow = new QueryNewTaskWindow<T>(
                 _queuesByPriority,
-                (task, action) =>  PutItemBack(task)
+                PutItemBack
             );
         }
 
@@ -40,12 +40,17 @@ namespace PriorityQueuesChannel
             var (action, task) = await _queryWindow.AwaitCompletion(windowToStayOpenTime);
             return task;
         }
-        
+
         private async Task PollQueueTask(string queue, TaskCompletionSource<bool> whenReady, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
-                whenReady.SetResult(true);
+                // If waiting for the result
+                if (!whenReady.Task.IsCompleted)
+                {
+                    whenReady.SetResult(true);    
+                }
+                
                 await _queryWindow.NextEventTask;
                 
                 while (!ct.IsCancellationRequested)
@@ -69,8 +74,8 @@ namespace PriorityQueuesChannel
 
         protected abstract Task<T> LongPollForItem(string queue);
 
-        protected abstract Task PutItemBack(T item);
+        protected abstract Task PutItemBack(string queue, T item);
         
-        public abstract Task AckItem(T item);
+        public abstract Task AckItem(string queue, T item);
     }
 }

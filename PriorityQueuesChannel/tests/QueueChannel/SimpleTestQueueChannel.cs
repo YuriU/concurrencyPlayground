@@ -4,20 +4,27 @@ using System.Threading.Tasks;
 
 namespace PriorityQueuesChannel.Tests
 {
-    public class TestQueueChannel : PrioritiesQueueChannelBase<string>
+    public class SimpleTestQueueChannel : PrioritiesQueueChannelBase<string>
     {
         private readonly TimeSpan _longPollInterval;
 
         private Dictionary<string, TaskCompletionSource<string>> _waiters =
             new Dictionary<string, TaskCompletionSource<string>>();
 
-        public TestQueueChannel(string[] queuesByPriority, TimeSpan longPollInterval) 
+        public Dictionary<string, List<string>> PutBackItems = new Dictionary<string, List<string>>(); 
+
+        public SimpleTestQueueChannel(string[] queuesByPriority, TimeSpan longPollInterval) 
             : base(queuesByPriority)
         {
             _longPollInterval = longPollInterval;
-            foreach (var s in queuesByPriority)
+            foreach (var queue in queuesByPriority)
             {
-                _waiters[s] = new TaskCompletionSource<string>();
+                _waiters[queue] = new TaskCompletionSource<string>();
+            }
+
+            foreach (var queue in queuesByPriority)
+            {
+                PutBackItems[queue] = new List<string>();
             }
         }
 
@@ -39,12 +46,13 @@ namespace PriorityQueuesChannel.Tests
             return null;
         }
 
-        protected override Task PutItemBack(string item)
+        protected override Task PutItemBack(string queue, string item)
         {
+            PutBackItems[queue].Add(item);
             return Task.CompletedTask;
         }
 
-        public override Task AckItem(string item)
+        public override Task AckItem(string queue, string item)
         {
             return Task.CompletedTask;
         }

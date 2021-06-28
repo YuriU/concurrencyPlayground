@@ -12,7 +12,7 @@ namespace PriorityQueuesChannel.Tests
         public async Task TestQueueChannel_NewerReturns()
         {
             // Arrange
-            var channel = new TestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(1));
+            var channel = new SimpleTestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(1));
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(5));
             await channel.Start(ct.Token);
@@ -29,7 +29,7 @@ namespace PriorityQueuesChannel.Tests
         public async Task TestQueueChannel_SetResult_ReturnsIt()
         {
             // Arrange
-            var channel = new TestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(3));
+            var channel = new SimpleTestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(3));
 
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(10));
@@ -55,7 +55,7 @@ namespace PriorityQueuesChannel.Tests
         public async Task TestQueueChannel_ResultFromPrevIteration_ReturnsIt()
         {
             // Arrange
-            var channel = new TestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(3));
+            var channel = new SimpleTestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(3));
            
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(5));
@@ -76,7 +76,7 @@ namespace PriorityQueuesChannel.Tests
         public async Task TestQueueChannel_SeveralResults_ReturnsMostPrioritized()
         {
             // Arrange
-            var channel = new TestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(3));
+            var channel = new SimpleTestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(3));
 
             var ct = new CancellationTokenSource();
             
@@ -95,6 +95,7 @@ namespace PriorityQueuesChannel.Tests
             
             // Assert
             Assert.Equal(valueToSet_A, item);
+            Assert.Single(channel.PutBackItems["b"]);
         }
         
         [Fact]
@@ -104,7 +105,7 @@ namespace PriorityQueuesChannel.Tests
 
             TimeSpan initialDelay = TimeSpan.FromSeconds(3); // Time during which the window will be opened, no matter if some tasks are ready
             
-            var channel = new TestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(4));
+            var channel = new SimpleTestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(4));
             var ct = new CancellationTokenSource();
             
             ct.CancelAfter(TimeSpan.FromSeconds(50));
@@ -127,6 +128,7 @@ namespace PriorityQueuesChannel.Tests
             
             // Assert
             Assert.Equal(valueToSet_A, item);
+            Assert.Single(channel.PutBackItems["b"]);
         }
     }
 }
