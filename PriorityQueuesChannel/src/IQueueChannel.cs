@@ -7,7 +7,7 @@ namespace PriorityQueuesChannel
     public interface IQueueChannel<T>
         where T : class
     {
-        void Start(CancellationToken ct);
+        Task Start(CancellationToken ct);
 
         Task<T> GetNextItem(TimeSpan windowToStayOpenTime);
 

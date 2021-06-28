@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace PriorityQueuesChannel
 {
@@ -22,12 +22,17 @@ namespace PriorityQueuesChannel
             );
         }
 
-        public void Start(CancellationToken ct)
+        public async Task Start(CancellationToken ct)
         {
+            List<Task> listerersReadyTasks = new List<Task>();
             foreach (var queue in _queuesByPriority)
             {
-                Task.Factory.StartNew(() => PollQueueTask(queue, ct), TaskCreationOptions.LongRunning);
+                var whenReady = new TaskCompletionSource<bool>();
+                Task.Factory.StartNew(() => PollQueueTask(queue, whenReady, ct), TaskCreationOptions.LongRunning);
+                listerersReadyTasks.Add(whenReady.Task);
             }
+
+            await Task.WhenAll(listerersReadyTasks);
         }
 
         public async Task<T> GetNextItem(TimeSpan windowToStayOpenTime)
@@ -36,18 +41,19 @@ namespace PriorityQueuesChannel
             return task;
         }
         
-        private async Task PollQueueTask(string action, CancellationToken ct)
+        private async Task PollQueueTask(string queue, TaskCompletionSource<bool> whenReady, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
+                whenReady.SetResult(true);
                 await _queryWindow.NextEventTask;
                 
                 while (!ct.IsCancellationRequested)
                 {
-                    var result = await LongPollForItem(action);
+                    var result = await LongPollForItem(queue);
                     if (result != null)
                     {
-                        await _queryWindow.TrySaveResult(action, result);
+                        await _queryWindow.TrySaveResult(queue, result);
                         break;
                     }
                     else
@@ -58,7 +64,7 @@ namespace PriorityQueuesChannel
                 }    
             }
 
-            _queryWindow.SetCanceled(action);
+            _queryWindow.SetCanceled(queue);
         }
 
         protected abstract Task<T> LongPollForItem(string queue);
