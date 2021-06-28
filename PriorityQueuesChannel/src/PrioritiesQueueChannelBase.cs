@@ -24,15 +24,15 @@ namespace PriorityQueuesChannel
 
         public async Task Start(CancellationToken ct)
         {
-            List<Task> listerersReadyTasks = new List<Task>();
+            List<Task> pollersReady = new List<Task>();
             foreach (var queue in _queuesByPriority)
             {
                 var whenReady = new TaskCompletionSource<bool>();
                 Task.Factory.StartNew(() => PollQueueTask(queue, whenReady, ct), TaskCreationOptions.LongRunning);
-                listerersReadyTasks.Add(whenReady.Task);
+                pollersReady.Add(whenReady.Task);
             }
 
-            await Task.WhenAll(listerersReadyTasks);
+            await Task.WhenAll(pollersReady);
         }
 
         public async Task<T> GetNextItem(TimeSpan windowToStayOpenTime)

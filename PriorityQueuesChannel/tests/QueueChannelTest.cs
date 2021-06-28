@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PriorityQueuesChannel.Tests.QueueChannel;
 using Xunit;
 
 namespace PriorityQueuesChannel.Tests
@@ -76,7 +77,7 @@ namespace PriorityQueuesChannel.Tests
         public async Task TestQueueChannel_SeveralResults_ReturnsMostPrioritized()
         {
             // Arrange
-            var channel = new SimpleTestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(3));
+            var channel = new SimpleTestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(3));
 
             var ct = new CancellationTokenSource();
             
@@ -105,7 +106,7 @@ namespace PriorityQueuesChannel.Tests
 
             TimeSpan initialDelay = TimeSpan.FromSeconds(3); // Time during which the window will be opened, no matter if some tasks are ready
             
-            var channel = new SimpleTestQueueChannel(new []{ "a", "b" }, TimeSpan.FromSeconds(4));
+            var channel = new SimpleTestQueueChannel(new [] { "a", "b" }, TimeSpan.FromSeconds(4));
             var ct = new CancellationTokenSource();
             
             ct.CancelAfter(TimeSpan.FromSeconds(50));

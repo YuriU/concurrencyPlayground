@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PriorityQueuesChannel.Tests
+namespace PriorityQueuesChannel.Tests.QueueChannel
 {
     public class SimpleTestQueueChannel : PrioritiesQueueChannelBase<string>
     {

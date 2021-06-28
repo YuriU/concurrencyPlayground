@@ -1,4 +1,4 @@
-﻿namespace PriorityQueuesChannel.Tests
+﻿namespace PriorityQueuesChannel.Tests.QueueChannel
 {
     public class TestQueueItem
     {
